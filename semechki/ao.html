@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StoryMeter | Інтерактивна аналітика історій</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 48px;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 500;
+            letter-spacing: -0.02em;
+            color: #1d1d1f;
+        }
+
+        .logo span {
+            color: #0066cc;
+        }
+
+        .user-mode {
+            display: flex;
+            gap: 8px;
+            background: #ffffff;
+            padding: 4px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .mode-btn {
+            padding: 8px 16px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #86868b;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mode-btn.active {
+            background: #0066cc;
+            color: white;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #0066cc;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0055b3;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #1d1d1f;
+            border: 1px solid #d2d2d7;
+        }
+
+        .btn-secondary:hover {
+            background: #f5f5f7;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stories-section {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1d1d1f;
+        }
+
+        .story-count {
+            color: #86868b;
+            font-size: 14px;
+        }
+
+        .story-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .story-item {
+            background: #f5f5f7;
+            border-radius: 16px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .story-item:hover {
+            background: #ffffff;
+            border-color: #0066cc;
+            box-shadow: 0 8px 20px rgba(0,102,204,0.1);
+            transform: translateY(-2px);
+        }
+
+        .story-item h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1d1d1f;
+        }
+
+        .story-item p {
+            font-size: 14px;
+            color: #86868b;
+            margin-bottom: 16px;
+            line-height: 1.4;
+        }
+
+        .story-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+            color: #86868b;
+        }
+
+        .story-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .sidebar h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1d1d1f;
+        }
+
+        .tip-list {
+            list-style: none;
+        }
+
+        .tip-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f7;
+        }
+
+        .tip-item:last-child {
+            border-bottom: none;
+        }
+
+        .tip-icon {
+            width: 32px;
+            height: 32px;
+            background: #f5f5f7;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0066cc;
+        }
+
+        .tip-text {
+            font-size: 14px;
+            color: #1d1d1f;
+            flex: 1;
+        }
+
+        .reader-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 24px;
+        }
+
+        .progress {
+            margin-bottom: 32px;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #f5f5f7;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #0066cc;
+            transition: width 0.3s;
+        }
+
+        .progress-text {
+            font-size: 13px;
+            color: #86868b;
+        }
+
+        .story-display {
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        .story-display h2 {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: #1d1d1f;
+            letter-spacing: -0.02em;
+        }
+
+        .story-text {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #1d1d1f;
+            margin-bottom: 48px;
+        }
+
+        .choices-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .choice-btn {
+            padding: 16px 24px;
+            background: #f5f5f7;
+            border: 1px solid #d2d2d7;
+            border-radius: 12px;
+            font-size: 16px;
+            color: #1d1d1f;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .choice-btn:hover {
+            background: #ffffff;
+            border-color: #0066cc;
+            box-shadow: 0 4px 12px rgba(0,102,204,0.15);
+        }
+
+        .stats-section {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: #f5f5f7;
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .stat-card h4 {
+            font-size: 13px;
+            color: #86868b;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 500;
+            color: #1d1d1f;
+        }
+
+        .choice-stats {
+            border-top: 1px solid #f5f5f7;
+            padding-top: 24px;
+        }
+
+        .choice-stats h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .choice-stat-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f7;
+        }
+
+        .choice-label {
+            min-width: 120px;
+            font-size: 14px;
+            color: #86868b;
+        }
+
+        .choice-bar-container {
+            flex: 1;
+            height: 6px;
+            background: #f5f5f7;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .choice-bar {
+            height: 100%;
+            background: #0066cc;
+            transition: width 0.3s;
+        }
+
+        .choice-percent {
+            min-width: 60px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1d1d1f;
+            text-align: right;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            padding: 32px;
+            width: 90%;
+            max-width: 520px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-header h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1d1d1f;
+        }
+
+        .close-modal {
+            font-size: 24px;
+            color: #86868b;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close-modal:hover {
+            color: #1d1d1f;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #1d1d1f;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d2d2d7;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #0066cc;
+            box-shadow: 0 0 0 3px rgba(0,102,204,0.1);
+        }
+
+        .options-container {
+            margin-top: 12px;
+        }
+
+        .option-item {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .option-item input {
+            flex: 1;
+        }
+
+        .remove-option {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: #f5f5f7;
+            border-radius: 8px;
+            color: #86868b;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .remove-option:hover {
+            background: #ff3b30;
+            color: white;
+        }
+
+        .add-option {
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px dashed #d2d2d7;
+            border-radius: 8px;
+            color: #0066cc;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .add-option:hover {
+            border-color: #0066cc;
+            background: #f5f5f7;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            color: #86868b;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #f5f5f7;
+            margin: 24px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <header class="header">
+            <div class="logo">
+                <h1>Story<span>Meter</span></h1>
+            </div>
+            <div class="user-mode">
+                <button class="mode-btn" onclick="setMode('creator')">Творець</button>
+                <button class="mode-btn active" onclick="setMode('reader')">Читач</button>
+            </div>
+        </header>
+
+        <div class="grid">
+            <section class="stories-section">
+                <div class="section-header">
+                    <h2>Доступні історії</h2>
+                    <span class="story-count" id="storyCount">0</span>
+                </div>
+                <div class="story-list" id="storiesList">
+                </div>
+            </section>
+
+            <aside class="sidebar" id="creatorSidebar">
+                <h3>Поради для творців</h3>
+                <ul class="tip-list">
+                    <li class="tip-item">
+                        <div class="tip-icon">🎯</div>
+                        <div class="tip-text">Створюйте нелінійні сюжети з неочікуваними поворотами</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-icon">📊</div>
+                        <div class="tip-text">Аналізуйте вибори читачів у реальному часі</div>
+                    </li>
+                    <li class="tip-item">
+                        <div class="tip-icon">🔄</div>
+                        <div class="tip-text">Додавайте нові розділи на основі популярних рішень</div>
+                    </li>
+                </ul>
+                <hr>
+                <button class="btn btn-primary" style="width: 100%;" onclick="showCreateModal()">+ Створити історію</button>
+            </aside>
+        </div>
+
+        <section class="reader-section hidden" id="readerSection">
+            <div class="progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+                <div class="progress-text" id="progressText">Розділ 1/?</div>
+            </div>
+            <div class="story-display" id="storyDisplay">
+            </div>
+        </section>
+
+        <section class="stats-section hidden" id="statsSection">
+            <div class="stats-grid" id="statsGrid"></div>
+            <div class="choice-stats" id="choiceStats"></div>
+        </section>
+    </div>
+
+    <div class="modal" id="createModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Нова історія</h2>
+                <span class="close-modal" onclick="closeCreateModal()">&times;</span>
+            </div>
+            <form onsubmit="createStory(event)">
+                <div class="form-group">
+                    <label>Назва</label>
+                    <input type="text" id="storyTitle" required placeholder="Наприклад: Останній рейс">
+                </div>
+                <div class="form-group">
+                    <label>Опис</label>
+                    <textarea id="storyDescription" rows="2" required placeholder="Короткий опис сюжету..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Жанр</label>
+                    <select id="storyGenre">
+                        <option value="fantasy">Фентезі</option>
+                        <option value="sci-fi">Наукова фантастика</option>
+                        <option value="mystery">Детектив</option>
+                        <option value="drama">Драма</option>
+                        <option value="horror">Хоррор</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Перший розділ</label>
+                    <textarea id="firstChapter" rows="4" required placeholder="Почніть свою історію..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Варіанти вибору</label>
+                    <div id="optionsContainer" class="options-container">
+                        <div class="option-item">
+                            <input type="text" class="option-text" placeholder="Варіант 1" required>
+                        </div>
+                        <div class="option-item">
+                            <input type="text" class="option-text" placeholder="Варіант 2" required>
+                        </div>
+                    </div>
+                    <button type="button" class="add-option" onclick="addOption()">+ Додати варіант</button>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Створити</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="continueModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Продовжити історію</h2>
+                <span class="close-modal" onclick="closeContinueModal()">&times;</span>
+            </div>
+            <form onsubmit="continueStory(event)">
+                <div class="form-group">
+                    <label>Новий розділ</label>
+                    <textarea id="newChapter" rows="4" required placeholder="Напишіть продовження..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Варіанти вибору</label>
+                    <div id="newOptionsContainer" class="options-container">
+                        <div class="option-item">
+                            <input type="text" class="new-option-text" placeholder="Варіант 1" required>
+                        </div>
+                        <div class="option-item">
+                            <input type="text" class="new-option-text" placeholder="Варіант 2" required>
+                        </div>
+                    </div>
+                    <button type="button" class="add-option" onclick="addNewOption()">+ Додати варіант</button>
+                </div>
+                <input type="hidden" id="currentStoryId">
+                <input type="hidden" id="currentChoiceId">
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Додати розділ</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let stories = [];
+        let currentMode = 'reader';
+        let currentStory = null;
+        let currentChapter = null;
+
+        function loadStories() {
+            const saved = localStorage.getItem('storymeter_data');
+            if (saved) {
+                stories = JSON.parse(saved);
+            } else {
+                stories = [{
+                    id: 'demo1',
+                    title: 'Останній рейс',
+                    description: 'Потяг наближається до кінцевої станції. Щось пішло не так...',
+                    genre: 'mystery',
+                    createdAt: new Date().toISOString(),
+                    chapters: [{
+                        id: 'ch1',
+                        text: 'Вагон погойдується в такт стуку коліс. Годинник показує 23:45. Раптом світло гасне, і ви чуєте крик з сусіднього купе. Що будете робити?',
+                        choices: [
+                            { id: 'ch1_c1', text: 'Вийти в коридор і перевірити, що сталося' },
+                            { id: 'ch1_c2', text: 'Залишитися в купе і зачинити двері' },
+                            { id: 'ch1_c3', text: 'Розбудити сусіда і діяти разом' }
+                        ],
+                        parentChoice: null
+                    }],
+                    statistics: {
+                        views: 0,
+                        completions: 0,
+                        choices: {}
+                    }
+                }];
+            }
+            renderStories();
+        }
+
+        function saveStories() {
+            localStorage.setItem('storymeter_data', JSON.stringify(stories));
+            renderStories();
+        }
+
+        function renderStories() {
+            const list = document.getElementById('storiesList');
+            const countSpan = document.getElementById('storyCount');
+            
+            if (stories.length === 0) {
+                list.innerHTML = '<div class="empty-state">Ще немає історій. Створіть першу!</div>';
+                countSpan.textContent = '0';
+                return;
+            }
+
+            countSpan.textContent = stories.length;
+
+            list.innerHTML = stories.map(story => `
+                <div class="story-item" onclick="selectStory('${story.id}')">
+                    <h3>${story.title}</h3>
+                    <p>${story.description}</p>
+                    <div class="story-meta">
+                        <span>📖 ${getGenreName(story.genre)}</span>
+                        <span>👁 ${story.statistics.views || 0}</span>
+                        <span>📊 ${story.statistics.completions || 0}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getGenreName(genre) {
+            const genres = {
+                'fantasy': 'Фентезі',
+                'sci-fi': 'Фантастика',
+                'mystery': 'Детектив',
+                'drama': 'Драма',
+                'horror': 'Хоррор'
+            };
+            return genres[genre] || genre;
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const readerSection = document.getElementById('readerSection');
+            const statsSection = document.getElementById('statsSection');
+            const creatorSidebar = document.getElementById('creatorSidebar');
+
+            if (mode === 'reader') {
+                readerSection.classList.remove('hidden');
+                statsSection.classList.add('hidden');
+                creatorSidebar.classList.add('hidden');
+                if (currentStory) {
+                    startReading(currentStory.id);
+                }
+            } else {
+                readerSection.classList.add('hidden');
+                statsSection.classList.remove('hidden');
+                creatorSidebar.classList.remove('hidden');
+                if (currentStory) {
+                    renderStatistics(currentStory.id);
+                }
+            }
+        }
+
+        function selectStory(storyId) {
+            const story = stories.find(s => s.id === storyId);
+            if (!story) return;
+            
+            currentStory = story;
+            
+            if (currentMode === 'reader') {
+                startReading(storyId);
+            } else {
+                renderStatistics(storyId);
+            }
+        }
+
+        function startReading(storyId) {
+            const story = stories.find(s => s.id === storyId);
+            if (!story) return;
+
+            currentStory = story;
+            currentChapter = story.chapters[0];
+            story.statistics.views++;
+            
+            renderChapter();
+            saveStories();
+        }
+
+        function renderChapter() {
+            if (!currentStory || !currentChapter) return;
+
+            const display = document.getElementById('storyDisplay');
+            const chapterIndex = currentStory.chapters.findIndex(ch => ch.id === currentChapter.id);
+            const totalChapters = currentStory.chapters.length;
+
+            document.getElementById('progressFill').style.width = ((chapterIndex + 1) / totalChapters * 100) + '%';
+            document.getElementById('progressText').textContent = `Розділ ${chapterIndex + 1}/${totalChapters}`;
+
+            let choicesHtml = '';
+            if (currentChapter.choices && currentChapter.choices.length > 0) {
+                choicesHtml = `
+                    <div class="choices-grid">
+                        ${currentChapter.choices.map(choice => `
+                            <button class="choice-btn" onclick="makeChoice('${choice.id}')">
+                                ${choice.text}
+                            </button>
+                        `).join('')}
+                    </div>
+                `;
+            } else {
+                choicesHtml = `
+                    <div style="text-align: center; padding: 48px 0;">
+                        <p style="color: #86868b; margin-bottom: 24px;">Кінець історії</p>
+                        ${currentMode === 'creator' ? `
+                            <button class="btn btn-primary" onclick="showContinueModal('${currentChapter.id}')">
+                                Продовжити історію
+                            </button>
+                        ` : `
+                            <button class="btn btn-secondary" onclick="startReading('${currentStory.id}')">
+                                Почати спочатку
+                            </button>
+                        `}
+                    </div>
+                `;
+                
+                if (currentMode === 'reader') {
+                    currentStory.statistics.completions++;
+                }
+            }
+
+            display.innerHTML = `
+                <h2>${currentStory.title}</h2>
+                <div class="story-text">${currentChapter.text}</div>
+                ${choicesHtml}
+            `;
+        }
+
+        function makeChoice(choiceId) {
+            if (!currentChapter || !currentChapter.choices) return;
+
+            const choice = currentChapter.choices.find(c => c.id === choiceId);
+            if (!choice) return;
+
+            const statKey = `${currentChapter.id}_${choiceId}`;
+            currentStory.statistics.choices[statKey] = (currentStory.statistics.choices[statKey] || 0) + 1;
+
+            const nextChapter = currentStory.chapters.find(ch => ch.parentChoice === choiceId);
+            
+            if (nextChapter) {
+                currentChapter = nextChapter;
+                renderChapter();
+            } else if (currentMode === 'creator') {
+                showContinueModal(choiceId);
+            } else {
+                renderChapter();
+            }
+            
+            saveStories();
+        }
+
+        function showCreateModal() {
+            document.getElementById('createModal').classList.add('active');
+        }
+
+        function closeCreateModal() {
+            document.getElementById('createModal').classList.remove('active');
+            document.getElementById('optionsContainer').innerHTML = `
+                <div class="option-item">
+                    <input type="text" class="option-text" placeholder="Варіант 1" required>
+                </div>
+                <div class="option-item">
+                    <input type="text" class="option-text" placeholder="Варіант 2" required>
+                </div>
+            `;
+        }
+
+        function showContinueModal(choiceId) {
+            document.getElementById('currentStoryId').value = currentStory.id;
+            document.getElementById('currentChoiceId').value = choiceId || '';
+            document.getElementById('continueModal').classList.add('active');
+        }
+
+        function closeContinueModal() {
+            document.getElementById('continueModal').classList.remove('active');
+            document.getElementById('continueStoryForm').reset();
+            document.getElementById('newOptionsContainer').innerHTML = `
+                <div class="option-item">
+                    <input type="text" class="new-option-text" placeholder="Варіант 1" required>
+                </div>
+                <div class="option-item">
+                    <input type="text" class="new-option-text" placeholder="Варіант 2" required>
+                </div>
+            `;
+        }
+
+        function addOption() {
+            const container = document.getElementById('optionsContainer');
+            const div = document.createElement('div');
+            div.className = 'option-item';
+            div.innerHTML = `
+                <input type="text" class="option-text" placeholder="Новий варіант" required>
+                <button type="button" class="remove-option" onclick="this.parentElement.remove()">×</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function addNewOption() {
+            const container = document.getElementById('newOptionsContainer');
+            const div = document.createElement('div');
+            div.className = 'option-item';
+            div.innerHTML = `
+                <input type="text" class="new-option-text" placeholder="Новий варіант" required>
+                <button type="button" class="remove-option" onclick="this.parentElement.remove()">×</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function createStory(event) {
+            event.preventDefault();
+            
+            const title = document.getElementById('storyTitle').value;
+            const description = document.getElementById('storyDescription').value;
+            const genre = document.getElementById('storyGenre').value;
+            const firstChapter = document.getElementById('firstChapter').value;
+            
+            const options = Array.from(document.querySelectorAll('.option-text')).map(input => ({
+                id: 'opt_' + Date.now() + Math.random(),
+                text: input.value
+            }));
+
+            const story = {
+                id: 'story_' + Date.now(),
+                title,
+                description,
+                genre,
+                createdAt: new Date().toISOString(),
+                chapters: [{
+                    id: 'ch_' + Date.now(),
+                    text: firstChapter,
+                    choices: options,
+                    parentChoice: null
+                }],
+                statistics: {
+                    views: 0,
+                    completions: 0,
+                    choices: {}
+                }
+            };
+
+            stories.push(story);
+            saveStories();
+            closeCreateModal();
+            event.target.reset();
+        }
+
+        function continueStory(event) {
+            event.preventDefault();
+            
+            const storyId = document.getElementById('currentStoryId').value;
+            const choiceId = document.getElementById('currentChoiceId').value;
+            const chapterText = document.getElementById('newChapter').value;
+            
+            const options = Array.from(document.querySelectorAll('.new-option-text')).map(input => ({
+                id: 'opt_' + Date.now() + Math.random(),
+                text: input.value
+            }));
+
+            const story = stories.find(s => s.id === storyId);
+            if (story) {
+                const newChapter = {
+                    id: 'ch_' + Date.now(),
+                    text: chapterText,
+                    choices: options,
+                    parentChoice: choiceId || null
+                };
+                
+                story.chapters.push(newChapter);
+                
+                if (currentStory && currentStory.id === storyId) {
+                    currentChapter = newChapter;
+                    renderChapter();
+                }
+                
+                saveStories();
+                closeContinueModal();
+            }
+        }
+
+        function renderStatistics(storyId) {
+            const story = stories.find(s => s.id === storyId);
+            if (!story) return;
+
+            const statsGrid = document.getElementById('statsGrid');
+            const choiceStats = document.getElementById('choiceStats');
+
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <h4>Перегляди</h4>
+                    <div class="stat-value">${story.statistics.views || 0}</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Прочитання</h4>
+                    <div class="stat-value">${story.statistics.completions || 0}</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Розділи</h4>
+                    <div class="stat-value">${story.chapters.length}</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Варіанти</h4>
+                    <div class="stat-value">${story.chapters.reduce((acc, ch) => acc + (ch.choices?.length || 0), 0)}</div>
+                </div>
+            `;
+
+            const choices = Object.entries(story.statistics.choices || {});
+            if (choices.length > 0) {
+                const total = choices.reduce((acc, [_, count]) => acc + count, 0);
+                
+                choiceStats.innerHTML = `
+                    <h3>Статистика виборів</h3>
+                    ${choices.map(([key, count]) => {
+                        const percent = total > 0 ? (count / total * 100).toFixed(1) : 0;
+                        return `
+                            <div class="choice-stat-item">
+                                <span class="choice-label">${key.split('_')[1]}</span>
+                                <div class="choice-bar-container">
+                                    <div class="choice-bar" style="width: ${percent}%"></div>
+                                </div>
+                                <span class="choice-percent">${count} (${percent}%)</span>
+                            </div>
+                        `;
+                    }).join('')}
+                `;
+            } else {
+                choiceStats.innerHTML = '<div class="empty-state">Ще немає даних про вибори</div>';
+            }
+        }
+
+        loadStories();
+    </script>
+</body>
+</html>
