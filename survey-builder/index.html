@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survey App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="logo">SURVEY</div>
+        <nav>
+            <button class="nav-btn active" onclick="showTab('builder')">BUILDER</button>
+            <button class="nav-btn" onclick="showTab('taker')">TAKER</button>
+            <button class="nav-btn" onclick="showTab('results')">RESULTS</button>
+        </nav>
+        <button class="publish-btn" onclick="publishSurvey()">PUBLISH</button>
+    </header>
+
+    <main>
+        <div id="builder" class="tab active">
+            <div class="builder-header">
+                <h2>Create Survey</h2>
+                <input type="text" id="surveyTitle" value="My Survey" placeholder="Survey title">
+            </div>
+            <div id="questions"></div>
+            <div class="add-buttons">
+                <button onclick="addQuestion('multiple')">+ Multiple Choice</button>
+                <button onclick="addQuestion('text')">+ Text Field</button>
+            </div>
+        </div>
+
+        <div id="taker" class="tab">
+            <div class="taker-header">
+                <h2>Take Survey</h2>
+                <select id="surveySelect" onchange="selectSurvey(this.value)">
+                    <option value="">Choose survey</option>
+                </select>
+            </div>
+            <div id="surveyContainer"></div>
+        </div>
+
+        <div id="results" class="tab">
+            <h2>Results</h2>
+            <div id="resultsContainer"></div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
